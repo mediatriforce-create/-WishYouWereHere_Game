@@ -42,10 +42,12 @@
     <div id="video-overlay" class="screen" role="dialog" aria-label="Music Video">
         <div class="video-wrapper">
             <button class="close-video" id="btn-video-close">[ Close Experience ]</button>
-            <video id="local-video-player" controls playsinline>
-                <source src="./assets/video/experience.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+            <iframe id="yt-player" 
+                    src="" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
         </div>
     </div>
 

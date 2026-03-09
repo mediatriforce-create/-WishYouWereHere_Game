@@ -110,30 +110,27 @@ const app = {
     openVideo() {
         if(this.els.audio) this.els.audio.pause(); 
         
-        // 1. Show overlay first
-        if(this.els.videoOverlay) {
-            this.els.videoOverlay.style.display = 'flex';
-            setTimeout(() => this.els.videoOverlay.classList.add('active'), 50);
-        }
-
-        // 2. Load and play after a short delay to ensure visibility
-        if(this.els.videoPlayer) {
-            this.els.videoPlayer.currentTime = 0;
-            this.els.videoPlayer.load(); // Force reload source
-            setTimeout(() => {
-                this.els.videoPlayer.play().catch(err => {
-                    console.error("Video: Manual play required or blocked.", err);
-                });
-            }, 100);
+        const overlay = document.getElementById('video-overlay');
+        const player = document.getElementById('yt-player');
+        
+        if(overlay && player) {
+            // Official Pink Floyd Video
+            player.src = "https://www.youtube.com/embed/IXdNnw99-Ic?autoplay=1";
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 50);
         }
     },
 
     closeVideo() {
-        if(!this.els.videoOverlay) return;
-        this.els.videoOverlay.classList.remove('active');
-        if(this.els.videoPlayer) this.els.videoPlayer.pause();
-        setTimeout(() => this.els.videoOverlay.style.display = 'none', 800);
-        if(this.els.audio && this.audioStarted) this.els.audio.play();
+        const overlay = document.getElementById('video-overlay');
+        const player = document.getElementById('yt-player');
+        
+        if(overlay && player) {
+            overlay.classList.remove('active');
+            player.src = ""; // Stop YouTube video completely
+            setTimeout(() => overlay.style.display = 'none', 800);
+            if(this.els.audio && this.audioStarted) this.els.audio.play();
+        }
     },
 
     playSFX(type) {
