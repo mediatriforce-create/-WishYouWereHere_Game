@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wish You Were Here | Interactive Experience</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Premium Interactive Elements -->
+    <div class="custom-cursor" id="custom-cursor" aria-hidden="true"></div>
+    <div class="custom-cursor-glow" id="custom-cursor-glow" aria-hidden="true"></div>
+
+    <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+    <div class="vignette-overlay" aria-hidden="true"></div>
+    <!-- Grain disabled per request, keeping tag for structure consistency -->
+    <div class="grain-overlay" style="display:none;" aria-hidden="true"></div>
+
+    <!-- Audio System -->
+    <audio id="bg-audio" loop preload="auto">
+        <source src="assets/audio/background.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="audio-toggle" class="audio-control" aria-label="Toggle Audio">
+        <svg class="icon-sound-on" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <svg class="icon-sound-off" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+    </button>
+
+    <!-- Video Experience Overlay -->
+    <div id="video-overlay" class="screen" role="dialog" aria-label="Music Video">
+        <div class="video-wrapper">
+            <button class="close-video" id="btn-video-close">[ Close Experience ]</button>
+            <video id="local-video-player" controls>
+                <source src="assets/video/experience.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <main id="app-container">
+        
+        <!-- Global HUD -->
+        <header id="global-top-bar" class="top-bar" aria-hidden="true">
+            <div class="progress-wrapper">
+                <span id="question-indicator">I / X</span>
+                <div class="progress-track">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div id="streak-indicator" class="streak-indicator hidden">
+                <span class="fire-icon">🔥</span>
+                <span id="streak-count">3x Combo</span>
+            </div>
+
+            <div id="scoreboard-container" class="scoreboard"></div>
+        </header>
+
+        <!-- 0. INTRO SEQUENCE -->
+        <section id="intro-screen" class="screen active" role="region">
+            <div class="intro-container">
+                <div id="intro-phase-1" class="intro-phase">
+                    <h1 class="intro-title">WISH YOU WERE HERE</h1>
+                    <p class="intro-subtitle">PINK FLOYD</p>
+                </div>
+                <div id="intro-phase-2" class="intro-phase">
+                    <h2 class="intro-title-sm">Welcome to this translation experience</h2>
+                </div>
+                <div id="intro-phase-3" class="intro-phase">
+                    <h2 class="intro-title-sm italic">Have fun</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. SPLASH SCREEN -->
+        <section id="splash-screen" class="screen" role="region">
+            <div class="content-panel text-center fade-enter-slow">
+                <div class="panel-spotlight"></div>
+                <!-- Handshake Symbol -->
+                <div class="symbol-container mb-md">
+                    <svg viewBox="0 0 100 100" width="80" height="80" class="album-symbol">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="#cca450" stroke-width="2.5" stroke-dasharray="4 4" />
+                        <path d="M 20 50 L 45 50 L 55 40 L 80 40" fill="none" stroke="#e8c678" stroke-width="2.5" />
+                        <path d="M 20 60 L 45 60 L 55 50 L 80 50" fill="none" stroke="#cca450" stroke-width="2.5" opacity="0.5"/>
+                    </svg>
+                </div>
+                <p class="subtitle tracking-wide mb-sm">Interactive Translation Experience</p>
+                <h1 class="title title-glow mb-md">WISH YOU<br>WERE HERE</h1>
+                <div class="divider mb-md"></div>
+                <p class="author-text mb-xl">The illusion of presence.</p>
+                <button id="btn-enter" class="btn btn-primary pulse-subtle">Enter the Void</button>
+            </div>
+        </section>
+
+        <!-- 2. HUB SCREEN -->
+        <section id="hub-screen" class="screen" role="region">
+            <div class="content-panel text-center fade-enter">
+                <div class="panel-spotlight"></div>
+                <!-- Fire Symbol -->
+                <div class="symbol-container-small mb-sm">
+                    <svg viewBox="0 0 50 50" width="45" height="45" class="album-symbol">
+                        <path d="M 10 35 Q 25 5 40 35" fill="none" stroke="#cca450" stroke-width="2.5"/>
+                        <circle cx="25" cy="30" r="6" fill="#d95c14"/>
+                    </svg>
+                </div>
+                <h2 class="title-sm gold-text mb-sm">The Journey</h2>
+                <nav class="menu-grid">
+                    <button id="btn-tutorial" class="btn btn-menu stagger-1">
+                        <span class="btn-title">Tutorial</span>
+                        <span class="btn-desc">Understand the mechanics</span>
+                    </button>
+                    <button id="btn-normal" class="btn btn-menu stagger-2">
+                        <span class="btn-title">Normal Mode</span>
+                        <span class="btn-desc">Individual challenge</span>
+                    </button>
+                    <button id="btn-versus" class="btn btn-menu stagger-3">
+                        <span class="btn-title">1v1 Versus</span>
+                        <span class="btn-desc">Identity & Competition</span>
+                    </button>
+                    <button id="btn-video" class="btn btn-menu stagger-4" style="border-color: #d95c14;">
+                        <span class="btn-title fire-text">Watch Experience</span>
+                        <span class="btn-desc">Official Local Video</span>
+                    </button>
+                </nav>
+                <div class="mt-lg flex-center gap-md">
+                    <button id="btn-about" class="btn btn-ghost">About</button>
+                    <button id="btn-archive" class="btn btn-ghost gold-text hidden">The Archive 🔓</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2.5 NAME SELECTION -->
+        <section id="name-screen" class="screen" role="region">
+            <div class="content-panel text-center fade-enter">
+                <div class="panel-spotlight"></div>
+                <!-- Identity Symbol -->
+                <div class="symbol-container-small mb-sm">
+                    <svg viewBox="0 0 50 50" width="45" height="45" class="album-symbol">
+                        <circle cx="25" cy="25" r="20" fill="none" stroke="#cca450" stroke-width="2.5" />
+                        <path d="M 15 25 L 35 25 M 25 15 L 25 35" stroke="#e8c678" stroke-width="2.5"/>
+                    </svg>
+                </div>
+                <h2 class="title-sm gold-text mb-lg">Identity</h2>
+                <div class="name-input-group mb-xl">
+                    <div class="player-input-wrapper">
+                        <label>Player 1</label>
+                        <input type="text" id="p1-name-input" class="name-field" placeholder="Enter name..." maxlength="12">
+                    </div>
+                    <div class="player-input-wrapper">
+                        <label>Player 2</label>
+                        <input type="text" id="p2-name-input" class="name-field" placeholder="Enter name..." maxlength="12">
+                    </div>
+                </div>
+                <button id="btn-start-vs" class="btn btn-primary btn-wide">Initialize Trial</button>
+            </div>
+        </section>
+
+        <!-- 3. ABOUT -->
+        <section id="about-screen" class="screen" role="region">
+            <div class="content-panel fade-enter">
+                <div class="panel-spotlight"></div>
+                <!-- Diver Symbol -->
+                <div class="symbol-container-small mb-sm">
+                    <svg viewBox="0 0 50 50" width="45" height="45">
+                        <line x1="25" y1="0" x2="25" y2="20" stroke="#a8a8b3" stroke-width="2.5" stroke-dasharray="2 2" />
+                        <rect x="15" y="20" width="20" height="4" fill="#cca450" />
+                        <circle cx="25" cy="40" r="8" fill="none" stroke="#d95c14" stroke-width="2.5" />
+                    </svg>
+                </div>
+                <h2 class="title-sm gold-text mb-md text-center">The Concept</h2>
+                <div class="text-body mb-lg">
+                    <p class="mb-sm text-center">Exploring the emotional depth of <strong>"Wish You Were Here"</strong> through contextual translation.</p>
+                </div>
+                <div class="text-center">
+                    <button id="btn-about-back" class="btn btn-secondary">Return</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.5 ARCHIVE -->
+        <section id="archive-screen" class="screen" role="region">
+            <div class="content-panel fade-enter">
+                <div class="panel-spotlight"></div>
+                <h2 class="title-sm gold-text mb-md text-center">Hidden Archive</h2>
+                <div class="text-body mb-lg" style="font-size: 0.95rem; text-align: justify;">
+                    <p>The burning man Ronnie Rondell was set on fire for the cover photo. Winds blew the flames, burning his real mustache.</p>
+                </div>
+                <div class="text-center">
+                    <button id="btn-archive-back" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. GAME -->
+        <section id="game-screen" class="screen">
+            <div class="content-panel game-panel text-center fade-enter">
+                <div class="panel-spotlight"></div>
+                <div class="question-meta mb-sm"><span class="q-type" id="q-type-label">Translation</span></div>
+                <p class="prompt-text mb-sm" id="q-prompt">Choose the best translation</p>
+                <h2 class="lyric-display mb-xl" id="q-source">"..."</h2>
+                <div id="q-interactive-area" class="interactive-area"></div>
+            </div>
+        </section>
+
+        <!-- 6. FEEDBACK -->
+        <section id="feedback-screen" class="screen">
+            <div class="content-panel text-center fade-enter">
+                <div class="panel-spotlight"></div>
+                <div class="feedback-visual-container mb-md" id="feedback-visual"></div>
+                <h2 class="title-md mb-xs" id="feedback-title">Result</h2>
+                <p class="points-display mb-md" id="feedback-points">+10</p>
+                <div class="feedback-breakdown text-left mb-lg" id="feedback-details"></div>
+                <p class="explanation-box italic mb-xl" id="feedback-explanation"></p>
+                <button id="btn-proceed" class="btn btn-primary btn-wide">Proceed</button>
+            </div>
+        </section>
+
+        <!-- 7. TURN SWITCH -->
+        <section id="turn-screen" class="screen">
+            <div class="content-panel text-center fade-enter">
+                <div class="panel-spotlight"></div>
+                <!-- Perspective Symbol -->
+                <div class="symbol-container-small mb-sm">
+                    <svg viewBox="0 0 50 50" width="50" height="50" class="album-symbol">
+                        <circle cx="25" cy="25" r="22" fill="none" stroke="#cca450" stroke-width="2.5" stroke-dasharray="4 6"/>
+                        <path d="M 25 5 L 25 45 M 5 25 L 45 25" fill="none" stroke="#e8c678" stroke-width="1.5" opacity="0.5"/>
+                        <circle cx="25" cy="25" r="5" fill="#d95c14"/>
+                    </svg>
+                </div>
+                <h2 class="subtitle tracking-wide mb-sm" id="turn-subtitle">Shift in Perspective</h2>
+                <h1 class="title-sm gold-text mb-md">Relinquish Control</h1>
+                <h2 class="title player-name-display mb-md" id="turn-player-name">Player</h2>
+                <button id="btn-ready" class="btn btn-primary pulse-subtle">I Am Ready</button>
+            </div>
+        </section>
+
+        <!-- 8. RESULTS -->
+        <section id="result-screen" class="screen">
+            <div class="content-panel result-panel text-center fade-enter">
+                <div class="panel-spotlight"></div>
+                <h2 class="title-md gold-text mb-lg" id="result-main-title">Final Analysis</h2>
+                <div id="result-content" class="result-cards-container mb-xl"></div>
+                <button id="btn-restart" class="btn btn-ghost">Return to Origin</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/questions.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
