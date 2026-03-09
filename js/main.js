@@ -114,8 +114,8 @@ const app = {
         const player = document.getElementById('yt-player');
         
         if(overlay && player) {
-            // Official Pink Floyd Video
-            player.src = "https://www.youtube.com/embed/IXdNnw99-Ic?autoplay=1";
+            // Official Pink Floyd Video (User Provided Link)
+            player.src = "https://www.youtube.com/embed/K6qj09OHvjw?autoplay=1";
             overlay.style.display = 'flex';
             setTimeout(() => overlay.classList.add('active'), 50);
         }
