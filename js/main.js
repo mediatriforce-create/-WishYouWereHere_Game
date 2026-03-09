@@ -109,13 +109,22 @@ const app = {
 
     openVideo() {
         if(this.els.audio) this.els.audio.pause(); 
-        if(this.els.videoPlayer) {
-            this.els.videoPlayer.currentTime = 0;
-            this.els.videoPlayer.play();
-        }
+        
+        // 1. Show overlay first
         if(this.els.videoOverlay) {
             this.els.videoOverlay.style.display = 'flex';
             setTimeout(() => this.els.videoOverlay.classList.add('active'), 50);
+        }
+
+        // 2. Load and play after a short delay to ensure visibility
+        if(this.els.videoPlayer) {
+            this.els.videoPlayer.currentTime = 0;
+            this.els.videoPlayer.load(); // Force reload source
+            setTimeout(() => {
+                this.els.videoPlayer.play().catch(err => {
+                    console.error("Video: Manual play required or blocked.", err);
+                });
+            }, 100);
         }
     },
 
